@@ -18,4 +18,6 @@ services:
         generateValue: true
       - key: NODE_VERSION
         value: "20"
+      - key: ROLLUP_SKIP_NODEJS_NATIVE
+        value: "1"
 
