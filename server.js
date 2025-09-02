@@ -13,7 +13,7 @@ app.use(express.json());
 
 // Подключение к Neon
 const pool = new Pool({
-  connectionString: "postgresql://neondb_owner:npg_hOa2GTSD5BmQ@ep-ancient-cloud-a2ycqvve-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+  connectionString: process.env.DATABASE_URL || "postgresql://neondb_owner:npg_hOa2GTSD5BmQ@ep-ancient-cloud-a2ycqvve-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 });
 
 // Настройки JWT
@@ -298,7 +298,21 @@ app.delete("/api/cards/:id", requireAuth, async (req, res) => {
   }
 });
 
-app.listen(5000, () => console.log("Server running on http://localhost:5000"));
+// --- Static serving for production build ---
+import path from "node:path";
+import fs from "node:fs";
+const distDir = path.resolve(process.cwd(), "dist");
+if (fs.existsSync(distDir)) {
+  app.use(express.static(distDir));
+  app.get("*", (_req, res, next) => {
+    // avoid intercepting API routes
+    if (_req.path.startsWith("/api") || _req.path.startsWith("/admin")) return next();
+    res.sendFile(path.join(distDir, "index.html"));
+  });
+}
+
+const PORT = Number(process.env.PORT || 5000);
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
 // Обновить карточку (редактирование текста и перевода по user_card)
 app.put("/api/cards/:id", requireAuth, async (req, res) => {
   try {

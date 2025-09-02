@@ -51,7 +51,7 @@ export default function App() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/cards?l1=${encodeURIComponent(l1)}&l2=${encodeURIComponent(l2)}` , {
+        const res = await fetch(`/api/cards?l1=${encodeURIComponent(l1)}&l2=${encodeURIComponent(l2)}` , {
           headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) }
         });
         if (res.status === 401) {
@@ -89,7 +89,7 @@ export default function App() {
     if (!token) return;
     (async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/me', {
+        const res = await fetch('/api/me', {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!res.ok) return;
@@ -114,7 +114,7 @@ export default function App() {
     (async () => {
       try {
         setLangsLoading(true);
-        const res = await fetch("http://localhost:5000/api/languages");
+        const res = await fetch("/api/languages");
         if (!res.ok) throw new Error("langs");
         const data = await res.json();
         setLangs(data);
@@ -134,7 +134,7 @@ export default function App() {
     (async () => {
       try {
         setLangsLoading(true);
-        const res = await fetch("http://localhost:5000/api/languages");
+        const res = await fetch("/api/languages");
         if (res.ok) {
           const data = await res.json();
           setLangs(data);
@@ -164,7 +164,7 @@ export default function App() {
   const cancelAdd = () => setIsAdding(false);
   const saveAdd = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/cards?l1=${encodeURIComponent(l1)}&l2=${encodeURIComponent(l2)}` , {
+      const res = await fetch(`/api/cards?l1=${encodeURIComponent(l1)}&l2=${encodeURIComponent(l2)}` , {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({ front: addFront.trim(), back: addBack.trim(), l1, l2 }),
@@ -193,7 +193,7 @@ export default function App() {
     const c = cards[index];
     if (!c) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/cards/${c.id}?l1=${encodeURIComponent(l1)}` , {
+      const res = await fetch(`/api/cards/${c.id}?l1=${encodeURIComponent(l1)}` , {
         method: "PUT",
         headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({ front: editFront.trim(), back: editBack.trim(), l1 }),
@@ -212,7 +212,7 @@ export default function App() {
     if (!c) return;
     if (!confirm(`Удалить карточку "${c.front}"?`)) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/cards/${c.id}`, { method: "DELETE", headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) } });
+      const res = await fetch(`/api/cards/${c.id}`, { method: "DELETE", headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) } });
       if (!res.ok) throw new Error(`DELETE ${res.status}`);
       setCards(prev => {
         const next = prev.filter(x => x.id !== c.id);
@@ -267,7 +267,7 @@ export default function App() {
     setProgress(updatedProgress);
     // persist to server
     if (token) {
-      fetch(`http://localhost:5000/api/cards/${c.id}/progress`, {
+      fetch(`/api/cards/${c.id}/progress`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ status: updatedForCard.status, knowCount: updatedForCard.knowCount, nextDue: updatedForCard.nextDue })
@@ -284,7 +284,7 @@ export default function App() {
     const updatedProgress = { ...progress, [c.id]: updated };
     setProgress(updatedProgress);
     if (token) {
-      fetch(`http://localhost:5000/api/cards/${c.id}/progress`, {
+      fetch(`/api/cards/${c.id}/progress`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ status: updated.status, knowCount: updated.knowCount, nextDue: updated.nextDue })
@@ -346,7 +346,7 @@ export default function App() {
 
   // --- Авторизация ---
   const authRequest = async (path) => {
-    const res = await fetch(`http://localhost:5000${path}`, {
+    const res = await fetch(`${path}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: authEmail.trim(), password: authPassword })
@@ -402,16 +402,16 @@ export default function App() {
   // Импорт стартовых карточек, если у пользователя их нет
   const maybeMigrateSeed = async (t) => {
     try {
-      const listRes = await fetch(`http://localhost:5000/api/cards?l1=${encodeURIComponent(l1)}&l2=${encodeURIComponent(l2)}` , { headers: { Authorization: `Bearer ${t}` } });
+      const listRes = await fetch(`/api/cards?l1=${encodeURIComponent(l1)}&l2=${encodeURIComponent(l2)}` , { headers: { Authorization: `Bearer ${t}` } });
       if (!listRes.ok) return;
       const list = await listRes.json();
       if (Array.isArray(list) && list.length === 0) {
-        const res = await fetch(`http://localhost:5000/api/cards/migrate?l1=${encodeURIComponent(l1)}&l2=${encodeURIComponent(l2)}` , {
+        const res = await fetch(`/api/cards/migrate?l1=${encodeURIComponent(l1)}&l2=${encodeURIComponent(l2)}` , {
           method: "POST",
           headers: { Authorization: `Bearer ${t}` }
         });
         if (res.ok) {
-          const after = await fetch(`http://localhost:5000/api/cards?l1=${encodeURIComponent(l1)}&l2=${encodeURIComponent(l2)}` , { headers: { Authorization: `Bearer ${t}` } });
+          const after = await fetch(`/api/cards?l1=${encodeURIComponent(l1)}&l2=${encodeURIComponent(l2)}` , { headers: { Authorization: `Bearer ${t}` } });
           if (after.ok) {
             const data = await after.json();
             setCards(data);
