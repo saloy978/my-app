@@ -5,3 +5,4 @@ $t = $resp.token
 Invoke-RestMethod -Method Post -Uri http://localhost:5000/admin/srs/init -Headers @{ Authorization = "Bearer $t" }
 Write-Host "SRS init done"
 
+

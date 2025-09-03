@@ -312,7 +312,12 @@ if (fs.existsSync(distDir)) {
 }
 
 const PORT = Number(process.env.PORT || 5000);
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+// On Vercel, we export the app for Serverless Functions and do not call listen()
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+}
+
+export default app;
 // Обновить карточку (редактирование текста и перевода по user_card)
 app.put("/api/cards/:id", requireAuth, async (req, res) => {
   try {

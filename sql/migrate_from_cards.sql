@@ -34,3 +34,4 @@ JOIN vocab_items v ON v.text = c.front AND v.lang_code = 'en'
 ON CONFLICT DO NOTHING;
 
 
+
